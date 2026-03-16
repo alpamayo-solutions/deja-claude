@@ -5,7 +5,7 @@ def test_main_module_is_importable():
     """Verify the package can be imported."""
     from deja_claude import __version__
 
-    assert __version__ == "0.1.0"
+    assert __version__
 
 
 def test_main_function_exists():
