@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from rich.text import Text
-
 from textual.containers import VerticalScroll
 from textual.widgets import Label, Static
 
@@ -33,8 +32,8 @@ class PreviewPane(VerticalScroll):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._show_tools = False
-        self._show_thinking = False
+        self._show_tools: bool = False
+        self._show_thinking: bool = False
 
     def show_empty(self, message: str = "Select a session to preview") -> None:
         self.remove_children()

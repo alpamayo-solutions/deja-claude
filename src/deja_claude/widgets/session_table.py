@@ -45,7 +45,8 @@ class SessionTable(DataTable):
         if self._search_filter:
             term = self._search_filter
             filtered = [
-                s for s in filtered
+                s
+                for s in filtered
                 if term in s.display_name.lower()
                 or term in s.first_prompt.lower()
                 or term in s.last_summary.lower()

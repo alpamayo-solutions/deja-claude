@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from .models import ContentBlock, ConversationTurn, SessionInfo
 from .settings import load_metadata, load_settings
@@ -39,7 +39,7 @@ def _decode_project_path(encoded: str) -> str:
     for marker in ("Projects-", "Downloads-"):
         idx = path.find(marker)
         if idx >= 0:
-            remainder = path[idx + len(marker):]
+            remainder = path[idx + len(marker) :]
             if remainder:
                 # The remainder might contain sub-paths with hyphens
                 # e.g. "prekit-prekit" means prekit/prekit, "composable-edge-node" could be
@@ -51,14 +51,28 @@ def _decode_project_path(encoded: str) -> str:
     for marker in ("till-",):
         idx = path.find(marker)
         if idx >= 0:
-            remainder = path[idx + len(marker):]
+            remainder = path[idx + len(marker) :]
             if remainder:
                 return remainder
 
     # Fallback: return last segment after splitting on common prefixes
     parts = path.split("-")
-    skip = {"Users", "till", "Projects", "var", "folders", "private", "tmp", "Downloads",
-            "home", "Volumes", "sr", "9dhvt", "5906qd9fq63btyh43r0000gn", "T"}
+    skip = {
+        "Users",
+        "till",
+        "Projects",
+        "var",
+        "folders",
+        "private",
+        "tmp",
+        "Downloads",
+        "home",
+        "Volumes",
+        "sr",
+        "9dhvt",
+        "5906qd9fq63btyh43r0000gn",
+        "T",
+    }
     meaningful = [p for p in parts if p and p not in skip]
     if meaningful:
         return "-".join(meaningful[-2:]) if len(meaningful) > 1 else meaningful[-1]
@@ -84,22 +98,20 @@ def _extract_first_prompt(content: list) -> str:
     return ""
 
 
-def _extract_tool_description(tool_name: str, tool_input: dict) -> str:
+def _extract_tool_description(tool_name: str, tool_input: dict) -> str:  # type: ignore[type-arg]
     """Extract a short description for a tool call."""
     if tool_name == "Bash":
-        return tool_input.get("command", "")[:120]
-    elif tool_name == "Read":
-        return tool_input.get("file_path", "")
-    elif tool_name in ("Write", "Edit"):
-        return tool_input.get("file_path", "")
+        return str(tool_input.get("command", ""))[:120]
+    elif tool_name == "Read" or tool_name in ("Write", "Edit"):
+        return str(tool_input.get("file_path", ""))
     elif tool_name in ("Glob", "Grep"):
-        return tool_input.get("pattern", "")
+        return str(tool_input.get("pattern", ""))
     elif tool_name == "Agent":
-        return tool_input.get("description", "")[:80]
+        return str(tool_input.get("description", ""))[:80]
     elif tool_name == "WebSearch":
-        return tool_input.get("query", "")[:80]
+        return str(tool_input.get("query", ""))[:80]
     elif tool_name == "WebFetch":
-        return tool_input.get("url", "")[:80]
+        return str(tool_input.get("url", ""))[:80]
     return ""
 
 
@@ -183,8 +195,8 @@ def scan_sessions() -> list[SessionInfo]:
     history_index: dict[str, str] = {}
     if history_path.exists():
         try:
-            with open(history_path) as f:
-                for line in f:
+            with open(history_path) as hf:
+                for line in hf:
                     try:
                         entry = json.loads(line)
                         sid = entry.get("sessionId", "")
@@ -238,8 +250,8 @@ def scan_sessions() -> list[SessionInfo]:
 
             # Read first ~50 lines to extract metadata
             try:
-                with open(jsonl_file) as f:
-                    for i, line in enumerate(f):
+                with open(jsonl_file) as jf:
+                    for i, line in enumerate(jf):
                         if i >= 50:
                             break
                         try:
@@ -269,10 +281,8 @@ def scan_sessions() -> list[SessionInfo]:
                             if not info.timestamp and obj.get("timestamp"):
                                 ts = obj["timestamp"]
                                 if isinstance(ts, str):
-                                    try:
+                                    with contextlib.suppress(ValueError):
                                         info.timestamp = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-                                    except ValueError:
-                                        pass
 
                         elif msg_type == "assistant" and not info.model:
                             msg = obj.get("message", {})
@@ -280,10 +290,8 @@ def scan_sessions() -> list[SessionInfo]:
                             if not info.timestamp and obj.get("timestamp"):
                                 ts = obj["timestamp"]
                                 if isinstance(ts, str):
-                                    try:
+                                    with contextlib.suppress(ValueError):
                                         info.timestamp = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-                                    except ValueError:
-                                        pass
 
                         elif msg_type == "system":
                             if not info.slug:
@@ -372,7 +380,7 @@ def _read_tail_lines(file_path: Path, file_size: int) -> list[str]:
     return lines
 
 
-def _parse_user_message(obj: dict) -> Optional[ConversationTurn]:
+def _parse_user_message(obj: dict) -> ConversationTurn | None:
     """Parse a user-type JSONL entry."""
     msg = obj.get("message", {})
     content = msg.get("content", [])
@@ -414,11 +422,13 @@ def _parse_user_message(obj: dict) -> Optional[ConversationTurn]:
                     tool_content = "\n".join(text_parts)
                 elif not isinstance(tool_content, str):
                     tool_content = str(tool_content)
-                blocks.append(ContentBlock(
-                    block_type="tool_result",
-                    text=tool_content[:5000],  # Truncate very long outputs
-                    is_error=block.get("is_error", False),
-                ))
+                blocks.append(
+                    ContentBlock(
+                        block_type="tool_result",
+                        text=tool_content[:5000],  # Truncate very long outputs
+                        is_error=block.get("is_error", False),
+                    )
+                )
 
     # Skip turns that are only tool results (they belong to the previous assistant turn)
     if is_only_tool_results and blocks:
@@ -439,7 +449,7 @@ def _parse_user_message(obj: dict) -> Optional[ConversationTurn]:
     )
 
 
-def _parse_assistant_message(obj: dict) -> Optional[ConversationTurn]:
+def _parse_assistant_message(obj: dict) -> ConversationTurn | None:
     """Parse an assistant-type JSONL entry."""
     msg = obj.get("message", {})
     content = msg.get("content", [])
@@ -452,8 +462,10 @@ def _parse_assistant_message(obj: dict) -> Optional[ConversationTurn]:
         if not blocks:
             return None
         return ConversationTurn(
-            role="assistant", content_blocks=blocks,
-            model=msg.get("model", ""), timestamp=obj.get("timestamp", ""),
+            role="assistant",
+            content_blocks=blocks,
+            model=msg.get("model", ""),
+            timestamp=obj.get("timestamp", ""),
         )
 
     for block in content:
@@ -474,15 +486,17 @@ def _parse_assistant_message(obj: dict) -> Optional[ConversationTurn]:
                 else:
                     desc = ""
                     input_str = str(tool_input)
-                blocks.append(ContentBlock(
-                    block_type="tool_use",
-                    tool_name=tool_name,
-                    tool_input=input_str[:3000],
-                    tool_description=desc,
-                ))
+                blocks.append(
+                    ContentBlock(
+                        block_type="tool_use",
+                        tool_name=tool_name,
+                        tool_input=input_str[:3000],
+                        tool_description=desc,
+                    )
+                )
             elif btype == "thinking":
-                text = block.get("thinking", block.get("text", ""))
-                if text.strip():
+                text = block.get("thinking") or block.get("text") or ""
+                if isinstance(text, str) and text.strip():
                     blocks.append(ContentBlock(block_type="thinking", text=text))
 
     if not blocks:
@@ -496,7 +510,7 @@ def _parse_assistant_message(obj: dict) -> Optional[ConversationTurn]:
     )
 
 
-def _parse_system_message(obj: dict) -> Optional[ConversationTurn]:
+def _parse_system_message(obj: dict) -> ConversationTurn | None:
     """Parse a system-type JSONL entry."""
     subtype = obj.get("subtype", "")
 

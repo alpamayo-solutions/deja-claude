@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 CONFIG_DIR = Path.home() / ".config" / "deja-claude"
 SETTINGS_FILE = CONFIG_DIR / "settings.json"
 METADATA_FILE = CONFIG_DIR / "metadata.json"
@@ -53,7 +52,8 @@ def load_metadata() -> dict[str, Any]:
     if METADATA_FILE.exists():
         try:
             with open(METADATA_FILE) as f:
-                return json.load(f)
+                result: dict[str, Any] = json.load(f)
+                return result
         except (json.JSONDecodeError, OSError):
             pass
     return {"sessions": {}}
@@ -68,7 +68,8 @@ def save_metadata(metadata: dict[str, Any]) -> None:
 def get_session_name(session_id: str) -> str:
     """Get custom name for a session, or empty string."""
     meta = load_metadata()
-    return meta.get("sessions", {}).get(session_id, {}).get("name", "")
+    name: str = meta.get("sessions", {}).get(session_id, {}).get("name", "")
+    return name
 
 
 def set_session_name(session_id: str, name: str) -> None:

@@ -1,14 +1,16 @@
 """Tests for the session scanner."""
 
-from deja_claude.scanner import scan_sessions, parse_session
-from deja_claude.settings import save_settings, DEFAULT_SETTINGS
+from deja_claude.scanner import parse_session, scan_sessions
+from deja_claude.settings import DEFAULT_SETTINGS, save_settings
 
 
 def test_scan_finds_all_valid_sessions(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -18,10 +20,12 @@ def test_scan_finds_all_valid_sessions(tmp_claude_dir):
 
 
 def test_scan_extracts_first_prompt(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -33,10 +37,12 @@ def test_scan_extracts_first_prompt(tmp_claude_dir):
 
 
 def test_scan_extracts_last_message(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -54,10 +60,12 @@ def test_scan_extracts_last_message(tmp_claude_dir):
 
 
 def test_scan_extracts_model(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -68,10 +76,12 @@ def test_scan_extracts_model(tmp_claude_dir):
 
 
 def test_scan_extracts_project_name(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -82,10 +92,12 @@ def test_scan_extracts_project_name(tmp_claude_dir):
 
 
 def test_scan_sorted_by_date_descending(tmp_claude_dir):
-    settings = {**DEFAULT_SETTINGS,
-                "claude_projects_path": str(tmp_claude_dir / "projects"),
-                "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-                "claude_sessions_path": str(tmp_claude_dir / "sessions")}
+    settings = {
+        **DEFAULT_SETTINGS,
+        "claude_projects_path": str(tmp_claude_dir / "projects"),
+        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+    }
     save_settings(settings)
 
     sessions = scan_sessions()
@@ -97,7 +109,12 @@ def test_scan_sorted_by_date_descending(tmp_claude_dir):
 
 
 def test_parse_session_returns_turns(tmp_claude_dir):
-    session_file = tmp_claude_dir / "projects" / "-Users-test-Projects-myapp" / "aaaa1111-0000-0000-0000-000000000001.jsonl"
+    session_file = (
+        tmp_claude_dir
+        / "projects"
+        / "-Users-test-Projects-myapp"
+        / "aaaa1111-0000-0000-0000-000000000001.jsonl"
+    )
     turns = parse_session(session_file)
 
     user_turns = [t for t in turns if t.role == "user"]
@@ -109,7 +126,12 @@ def test_parse_session_returns_turns(tmp_claude_dir):
 
 
 def test_parse_session_extracts_tool_calls(tmp_claude_dir):
-    session_file = tmp_claude_dir / "projects" / "-Users-test-Projects-backend" / "bbbb3333-0000-0000-0000-000000000003.jsonl"
+    session_file = (
+        tmp_claude_dir
+        / "projects"
+        / "-Users-test-Projects-backend"
+        / "bbbb3333-0000-0000-0000-000000000003.jsonl"
+    )
     turns = parse_session(session_file)
 
     tool_turns = [t for t in turns if t.has_tool_calls]
@@ -119,7 +141,12 @@ def test_parse_session_extracts_tool_calls(tmp_claude_dir):
 
 def test_parse_string_content(tmp_claude_dir):
     """Test that string content (not list) is parsed correctly."""
-    session_file = tmp_claude_dir / "projects" / "-Users-test-Projects-myapp" / "aaaa1111-0000-0000-0000-000000000001.jsonl"
+    session_file = (
+        tmp_claude_dir
+        / "projects"
+        / "-Users-test-Projects-myapp"
+        / "aaaa1111-0000-0000-0000-000000000001.jsonl"
+    )
     turns = parse_session(session_file)
 
     # First user message has string content

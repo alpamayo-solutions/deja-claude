@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -21,7 +20,7 @@ class SessionInfo:
     first_prompt: str = ""
     last_summary: str = ""  # last message from either side
     last_role: str = ""  # "user" or "assistant"
-    timestamp: Optional[datetime] = None
+    timestamp: datetime | None = None
     model: str = ""
     git_branch: str = ""
     slug: str = ""

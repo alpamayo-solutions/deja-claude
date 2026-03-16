@@ -29,7 +29,8 @@ def test_export_creates_markdown(tmp_path):
         ),
     ]
 
-    from deja_claude.settings import save_settings, DEFAULT_SETTINGS
+    from deja_claude.settings import DEFAULT_SETTINGS, save_settings
+
     save_settings({**DEFAULT_SETTINGS, "export_dir": str(tmp_path)})
 
     path = export_session_markdown(session, turns)
@@ -42,11 +43,16 @@ def test_export_creates_markdown(tmp_path):
     assert "**Project:** app" in content
 
 
-def test_delete_session_removes_file(tmp_path):
-    jsonl_file = tmp_path / "test-session.jsonl"
+def test_delete_session_removes_file(tmp_path, monkeypatch):
+    # Place files under a fake ~/.claude/ so the safety check passes
+    monkeypatch.setattr(Path, "home", staticmethod(lambda: tmp_path))
+
+    claude_dir = tmp_path / ".claude" / "projects" / "test-project"
+    claude_dir.mkdir(parents=True)
+    jsonl_file = claude_dir / "test-session.jsonl"
     jsonl_file.write_text('{"type":"user"}\n')
 
-    companion_dir = tmp_path / "test-session"
+    companion_dir = claude_dir / "test-session"
     companion_dir.mkdir()
     (companion_dir / "subagent.jsonl").write_text("{}\n")
 
@@ -65,12 +71,18 @@ def test_delete_session_removes_file(tmp_path):
     assert not companion_dir.exists()
 
 
-def test_delete_session_missing_file_no_error(tmp_path):
+def test_delete_session_missing_file_no_error(tmp_path, monkeypatch):
+    # Place the path under a fake ~/.claude/ so safety check passes
+    monkeypatch.setattr(Path, "home", staticmethod(lambda: tmp_path))
+
+    claude_dir = tmp_path / ".claude" / "projects"
+    claude_dir.mkdir(parents=True)
+
     session = SessionInfo(
         session_id="missing",
         project_path="p",
         project_name="p",
-        file_path=tmp_path / "does-not-exist.jsonl",
+        file_path=claude_dir / "does-not-exist.jsonl",
         file_size=0,
         mtime=0,
     )

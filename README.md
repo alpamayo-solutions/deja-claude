@@ -1,6 +1,9 @@
 # deja-claude
 
 [![CI](https://github.com/alpamayo-solutions/deja-claude/actions/workflows/ci.yml/badge.svg)](https://github.com/alpamayo-solutions/deja-claude/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/deja-claude)](https://pypi.org/project/deja-claude/)
+[![Python 3.10+](https://img.shields.io/pypi/pyversions/deja-claude)](https://pypi.org/project/deja-claude/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 A keyboard-driven TUI for browsing, previewing, and managing [Claude Code](https://docs.anthropic.com/en/docs/claude-code) conversation sessions.
 
@@ -11,13 +14,13 @@ Claude Code stores every conversation as JSONL files in `~/.claude/projects/`. W
 **With pipx (recommended):**
 
 ```bash
-pipx install git+https://github.com/alpamayo-solutions/deja-claude.git
+pipx install deja-claude
 ```
 
 **With pip:**
 
 ```bash
-pip install git+https://github.com/alpamayo-solutions/deja-claude.git
+pip install deja-claude
 ```
 
 **From source:**
@@ -25,7 +28,7 @@ pip install git+https://github.com/alpamayo-solutions/deja-claude.git
 ```bash
 git clone https://github.com/alpamayo-solutions/deja-claude.git
 cd deja-claude
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ## Usage
@@ -120,6 +123,10 @@ Session names (set with `r`) are stored in `~/.config/deja-claude/metadata.json`
 
 - Python 3.10+
 - [Textual](https://textual.textualize.io/) (installed automatically)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 

@@ -20,7 +20,6 @@ class FooterBar(Static):
 
     def __init__(self, **kwargs):
         hints = (
-            " o:open  d:delete  e:export  r:rename  /:search"
-            "  t:tools  w:thinking  R:refresh  ?:help  q:quit"
+            " o:open  d:delete  e:export  r:rename  /:search  t:tools  w:thinking  R:refresh  ?:help  q:quit"
         )
         super().__init__(hints, **kwargs)

@@ -79,6 +79,13 @@ def export_session_markdown(session: SessionInfo, turns: list[ConversationTurn])
 
 def delete_session(session: SessionInfo) -> None:
     """Delete a session JSONL file and its companion directory if present."""
+    # Safety: only delete files within the expected Claude data directory
+    claude_dir = Path.home() / ".claude"
+    try:
+        session.file_path.resolve().relative_to(claude_dir.resolve())
+    except ValueError as err:
+        raise ValueError(f"Refusing to delete {session.file_path}: not inside {claude_dir}") from err
+
     # Delete the JSONL file
     if session.file_path.exists():
         session.file_path.unlink()
@@ -92,5 +99,5 @@ def delete_session(session: SessionInfo) -> None:
 def get_open_command(session: SessionInfo) -> str:
     """Build the command to open a session in Claude."""
     settings = load_settings()
-    cmd = settings["open_command"]
+    cmd: str = settings["open_command"]
     return cmd.format(session_id=session.session_id)

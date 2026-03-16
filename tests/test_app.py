@@ -1,22 +1,22 @@
 """Tests for the Textual app."""
 
-import asyncio
-
 import pytest
 
 from deja_claude.app import DejaClaudeApp
-from deja_claude.settings import save_settings, DEFAULT_SETTINGS
+from deja_claude.settings import DEFAULT_SETTINGS, save_settings
 
 
 @pytest.fixture
 def app_with_data(tmp_claude_dir):
     """Configure settings to use test data, return app instance."""
-    save_settings({
-        **DEFAULT_SETTINGS,
-        "claude_projects_path": str(tmp_claude_dir / "projects"),
-        "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
-        "claude_sessions_path": str(tmp_claude_dir / "sessions"),
-    })
+    save_settings(
+        {
+            **DEFAULT_SETTINGS,
+            "claude_projects_path": str(tmp_claude_dir / "projects"),
+            "claude_history_path": str(tmp_claude_dir / "history.jsonl"),
+            "claude_sessions_path": str(tmp_claude_dir / "sessions"),
+        }
+    )
     return DejaClaudeApp()
 
 
@@ -40,6 +40,7 @@ async def test_app_search_filters(app_with_data):
 
         # Type search term
         from textual.widgets import Input
+
         inp = app_with_data.query_one("#search-input", Input)
         inp.value = "health"
         await pilot.pause()
@@ -57,6 +58,7 @@ async def test_app_escape_clears_search(app_with_data):
         await pilot.press("slash")
         await pilot.pause()
         from textual.widgets import Input
+
         inp = app_with_data.query_one("#search-input", Input)
         inp.value = "health"
         await pilot.pause()

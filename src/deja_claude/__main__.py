@@ -1,6 +1,7 @@
 """Entry point for deja-claude."""
 
 import argparse
+import contextlib
 
 from .app import DejaClaudeApp
 from .settings import load_settings
@@ -19,11 +20,9 @@ def main():
     folder = args.folder or load_settings().get("default_folder", "")
 
     app = DejaClaudeApp(folder_filter=folder)
-    try:
+    # Suppress Textual/Rich shutdown serialization errors
+    with contextlib.suppress(ValueError, EOFError):
         app.run()
-    except (ValueError, EOFError):
-        # Suppress Textual/Rich shutdown serialization errors
-        pass
 
 
 if __name__ == "__main__":

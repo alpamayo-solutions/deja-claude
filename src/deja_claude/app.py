@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from typing import Any
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -130,7 +131,7 @@ class DejaClaudeApp(App):
             self.set_timer(0.01, lambda: self.query_one(f"#{self.PANEL_IDS[target]}").focus())
 
     def on_mount(self) -> None:
-        self.run_worker(self._load_sessions, thread=True)
+        self.run_worker(self._load_sessions, thread=True)  # type: ignore[arg-type]
         preview = self.query_one("#preview-pane", PreviewPane)
         preview.show_empty()
 
@@ -170,7 +171,7 @@ class DejaClaudeApp(App):
             # Cancel pending preview load — debounce rapid scrolling
             if self._preview_timer is not None:
                 self._preview_timer.stop()
-            self._preview_timer = self.set_timer(
+            self._preview_timer = self.set_timer(  # type: ignore[assignment]
                 0.15, lambda: self._start_preview_worker(session)
             )
 
@@ -181,7 +182,7 @@ class DejaClaudeApp(App):
             turns = parse_session(session.file_path)
             self.call_from_thread(self._render_preview, turns)
 
-        self.run_worker(load, thread=True, exclusive=True, group="preview")
+        self.run_worker(load, thread=True, exclusive=True, group="preview")  # type: ignore[arg-type]
 
     def _render_preview(self, turns) -> None:
         preview = self.query_one("#preview-pane", PreviewPane)
@@ -225,7 +226,7 @@ class DejaClaudeApp(App):
                 title="Delete Session",
                 message=f"Delete '{name}'? ({size})\nThis cannot be undone.",
             ),
-            on_confirm,
+            on_confirm,  # type: ignore[arg-type]
         )
 
     def action_export_session(self) -> None:
@@ -240,7 +241,7 @@ class DejaClaudeApp(App):
             path = export_session_markdown(session, turns)
             self.call_from_thread(self._show_export_result, path)
 
-        self.run_worker(do_export, thread=True)
+        self.run_worker(do_export, thread=True)  # type: ignore[arg-type]
 
     def _show_export_result(self, path) -> None:
         self.push_screen(ExportResultScreen(path))
@@ -263,7 +264,7 @@ class DejaClaudeApp(App):
 
         self.push_screen(
             RenameScreen(current_name=session.custom_name or session.display_name),
-            on_rename,
+            on_rename,  # type: ignore[arg-type]
         )
 
     def action_start_search(self) -> None:
@@ -314,7 +315,7 @@ class DejaClaudeApp(App):
         self._current_session = None
         preview = self.query_one("#preview-pane", PreviewPane)
         preview.show_empty("Refreshing...")
-        self.run_worker(self._load_sessions, thread=True)
+        self.run_worker(self._load_sessions, thread=True)  # type: ignore[arg-type]
 
     def action_show_help(self) -> None:
         self.push_screen(HelpScreen())
@@ -333,7 +334,7 @@ class DejaClaudeApp(App):
         if focused is None:
             return -1
         # Walk up the DOM to find which panel contains the focused widget
-        node = focused
+        node: Any = focused
         while node is not None:
             if hasattr(node, "id") and node.id in self.PANEL_IDS:
                 return self.PANEL_IDS.index(node.id)

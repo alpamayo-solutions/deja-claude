@@ -6,13 +6,41 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [{ name = "Alpamayo Solutions", email = "dev@alpamayo.ch" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 dependencies = ["textual>=3.0,<4"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-asyncio", "ruff"]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "ruff",
+    "mypy",
+    "pre-commit",
+    "build",
+]
 
 [project.scripts]
 deja-claude = "deja_claude.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/alpamayo-solutions/deja-claude"
+Repository = "https://github.com/alpamayo-solutions/deja-claude"
+Issues = "https://github.com/alpamayo-solutions/deja-claude/issues"
+Changelog = "https://github.com/alpamayo-solutions/deja-claude/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -26,13 +54,17 @@ target-version = "py310"
 line-length = 110
 
 [tool.ruff.lint]
-ignore = ["E402", "E501", "F403"]
-fixable = [
-    "A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
-    "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT",
-    "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH",
-    "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT",
-]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E402", "E501", "RUF012"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["deja_claude"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

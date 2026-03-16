@@ -8,8 +8,12 @@ from deja_claude.models import ContentBlock, ConversationTurn, SessionInfo
 
 def test_session_display_name_custom():
     s = SessionInfo(
-        session_id="abc", project_path="p", project_name="proj",
-        file_path=Path("/tmp/x.jsonl"), file_size=100, mtime=0,
+        session_id="abc",
+        project_path="p",
+        project_name="proj",
+        file_path=Path("/tmp/x.jsonl"),
+        file_size=100,
+        mtime=0,
         custom_name="My Session",
     )
     assert s.display_name == "My Session"
@@ -17,8 +21,12 @@ def test_session_display_name_custom():
 
 def test_session_display_name_last_summary():
     s = SessionInfo(
-        session_id="abc", project_path="p", project_name="proj",
-        file_path=Path("/tmp/x.jsonl"), file_size=100, mtime=0,
+        session_id="abc",
+        project_path="p",
+        project_name="proj",
+        file_path=Path("/tmp/x.jsonl"),
+        file_size=100,
+        mtime=0,
         last_summary="The latest thing that happened",
     )
     assert s.display_name == "The latest thing that happened"
@@ -26,8 +34,12 @@ def test_session_display_name_last_summary():
 
 def test_session_display_name_first_prompt_fallback():
     s = SessionInfo(
-        session_id="abc", project_path="p", project_name="proj",
-        file_path=Path("/tmp/x.jsonl"), file_size=100, mtime=0,
+        session_id="abc",
+        project_path="p",
+        project_name="proj",
+        file_path=Path("/tmp/x.jsonl"),
+        file_size=100,
+        mtime=0,
         first_prompt="How do I do X?",
     )
     assert s.display_name == "How do I do X?"
@@ -35,8 +47,12 @@ def test_session_display_name_first_prompt_fallback():
 
 def test_session_display_name_slug_fallback():
     s = SessionInfo(
-        session_id="abc", project_path="p", project_name="proj",
-        file_path=Path("/tmp/x.jsonl"), file_size=100, mtime=0,
+        session_id="abc",
+        project_path="p",
+        project_name="proj",
+        file_path=Path("/tmp/x.jsonl"),
+        file_size=100,
+        mtime=0,
         slug="happy-dancing-penguin",
     )
     assert s.display_name == "happy-dancing-penguin"
@@ -44,33 +60,62 @@ def test_session_display_name_slug_fallback():
 
 def test_session_display_name_id_fallback():
     s = SessionInfo(
-        session_id="abc123def456", project_path="p", project_name="proj",
-        file_path=Path("/tmp/x.jsonl"), file_size=100, mtime=0,
+        session_id="abc123def456",
+        project_path="p",
+        project_name="proj",
+        file_path=Path("/tmp/x.jsonl"),
+        file_size=100,
+        mtime=0,
     )
     assert s.display_name == "abc123def456"
 
 
 def test_session_size_display():
-    assert SessionInfo(
-        session_id="a", project_path="p", project_name="p",
-        file_path=Path("/tmp/x"), file_size=500, mtime=0,
-    ).size_display == "500B"
+    assert (
+        SessionInfo(
+            session_id="a",
+            project_path="p",
+            project_name="p",
+            file_path=Path("/tmp/x"),
+            file_size=500,
+            mtime=0,
+        ).size_display
+        == "500B"
+    )
 
-    assert SessionInfo(
-        session_id="a", project_path="p", project_name="p",
-        file_path=Path("/tmp/x"), file_size=2048, mtime=0,
-    ).size_display == "2KB"
+    assert (
+        SessionInfo(
+            session_id="a",
+            project_path="p",
+            project_name="p",
+            file_path=Path("/tmp/x"),
+            file_size=2048,
+            mtime=0,
+        ).size_display
+        == "2KB"
+    )
 
-    assert SessionInfo(
-        session_id="a", project_path="p", project_name="p",
-        file_path=Path("/tmp/x"), file_size=5_242_880, mtime=0,
-    ).size_display == "5.0MB"
+    assert (
+        SessionInfo(
+            session_id="a",
+            project_path="p",
+            project_name="p",
+            file_path=Path("/tmp/x"),
+            file_size=5_242_880,
+            mtime=0,
+        ).size_display
+        == "5.0MB"
+    )
 
 
 def test_session_display_date_from_timestamp():
     s = SessionInfo(
-        session_id="a", project_path="p", project_name="p",
-        file_path=Path("/tmp/x"), file_size=0, mtime=0,
+        session_id="a",
+        project_path="p",
+        project_name="p",
+        file_path=Path("/tmp/x"),
+        file_size=0,
+        mtime=0,
         timestamp=datetime(2026, 3, 16, 10, 30, tzinfo=timezone.utc),
     )
     assert "2026-03-16" in s.display_date
