@@ -7,6 +7,8 @@
 
 A keyboard-driven TUI for browsing, previewing, and managing [Claude Code](https://docs.anthropic.com/en/docs/claude-code) conversation sessions.
 
+![deja-claude screenshot](screenshot.png)
+
 Claude Code stores every conversation as JSONL files in `~/.claude/projects/`. With hundreds of sessions, there's no good way to browse, search, preview, or manage them. **deja-claude** gives you a lazydocker-style interface to navigate your session history.
 
 ## Installation
