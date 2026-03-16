@@ -1,6 +1,6 @@
 [project]
 name = "deja-claude"
-version = "0.1.0"
+version = "1.0.0"
 description = "TUI browser for Claude Code conversation sessions"
 readme = "README.md"
 license = { text = "MIT" }
